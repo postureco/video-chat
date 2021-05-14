@@ -1,6 +1,6 @@
 {
   "name": "video-chat",
-  "description" : "Chat with 1 to 1 and many to many video functionality",
+  "description": "Chat with 1 to 1 and many to many video functionality",
   "version": "0.1.0",
   "private": true,
   "scripts": {

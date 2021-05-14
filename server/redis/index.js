@@ -7,9 +7,25 @@ const config = require('./../config/')
 bluebird.promisifyAll(redis)
 
 function ChatRedis() {
-    this.client = redis.createClient({
-        host: config.REDIS_HOST
-    })
+    console.log('connecting to redis', process.env.REDIS_URL);
+    this.client = redis.createClient(process.env.REDIS_URL);
+    console.log('done');
+
+    console.log('authing to redis', process.env.REDIS_PASSWORD);
+
+    this.client.auth(process.env.REDIS_PASSWORD, (err) => {
+         if (err) {
+             console.log('Error authing with password', process.env.REDIS_PASSWORD);
+             throw err;
+         }
+        console.log('DONE authing to redis');
+    });
+
+    this.client.on('connect', () => console.log('connected to Redis'));
+
+    this.client.on('error', (err) => {
+        console.log('Redis Error:', err);
+    });
 }
 
 /**

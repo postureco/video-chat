@@ -6,9 +6,8 @@ RUN npm install
 
 COPY ./ /videochat
 
-ARG VUE_APP_SOCKET_HOST=NOT_SET
-ARG VUE_APP_SOCKET_PORT=NOT_SET
-
+ARG VUE_APP_SOCKET_HOST=https://posturing.herokuapp.com
+ARG VUE_APP_SOCKET_PORT=443
 RUN export VUE_APP_SOCKET_HOST=${VUE_APP_SOCKET_HOST} VUE_APP_SOCKET_PORT=${VUE_APP_SOCKET_PORT} && npm run build
 
 CMD ["npm", "run", "run:server"]
