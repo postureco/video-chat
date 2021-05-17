@@ -17,7 +17,7 @@
           <md-button
             class="md-icon-button chat-dialog__video"
             @click="video(!videoCall)"
-            :disabled="showDialog.msg.length === 0">
+            :disabled="false && showDialog.msg.length === 0">
             <md-icon>{{videoCall ? 'videocam_off' : 'video_call' }}</md-icon>
           </md-button>
           <md-button class="md-icon-button chat-dialog__exit" @click="closeChat()">
@@ -26,7 +26,7 @@
         </div>
         <md-dialog-content>
           <p class="chat-dialog__title">Private chat with {{showDialog.user}}</p>
-          <ChatArea 
+          <ChatArea
             :messages="showDialog.msg"
             :maxMessageLength="30"
             :chatContainer="'md-dialog-content'">
@@ -105,7 +105,7 @@ export default {
       this.$emit("close-chat")
     },
     openChat(description, from){
-      this.videoAnswer = { ...this.videoAnser, video: true, remoteDesc: description, from }
+      this.videoAnswer = { ...this.videoAnswer, video: true, remoteDesc: description, from }
       this.videoCall = true
     },
     sendPrivateMessage(msg) {
@@ -129,20 +129,21 @@ export default {
   watch: {
     showDialog: function({ chat }, oldVal) {
       if (chat && chat !== oldVal.chat ) {
-        // Peer openning private chat
+        // Peer opening private chat
         if (this.showDialog.room !== this.$store.state.username){
             this.$socket.emit(WS_EVENTS.joinPrivateRoom, {
               ...this.$store.state,
               to: this.showDialog.user,
               from: this.$store.state.username,
             })
+            this.video(true);
         }
         // Peer receiving a private chat request
         if (this.showDialog.room === this.$store.state.username) {
           this.$socket.emit(WS_EVENTS.joinPrivateRoom, {
             ...this.$store.state,
-            // to: this.showDialog.user, 
-            to: this.$store.state.username, 
+            // to: this.showDialog.user,
+            to: this.$store.state.username,
             from: this.$store.state.username,
             joinConfirmation: true
           })
