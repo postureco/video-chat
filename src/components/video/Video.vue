@@ -1,29 +1,33 @@
 <template>
   <div class="video">
     <div class="video__spinner">
-      <md-progress-spinner 
-        v-if="!videoStream" 
-        class="md-accent" 
+      <md-progress-spinner
+        v-if="!videoStream"
+        class="md-accent"
         md-mode="indeterminate">
       </md-progress-spinner>
      </div>
 
-    <AudioVideoControls 
-        v-if="displayControls" 
-        :pauseVideo="pauseVideo" 
+    <AudioVideoControls
+        v-if="displayControls"
+        :pauseVideo="pauseVideo"
         :pauseAudio="pauseAudio">
     </AudioVideoControls>
-    <video  
-        :id="videoId"      
+    <video
+        :id="videoId"
         autoplay="true"
         muted="muted"
         v-if="muted">
     </video>
-    <video  
-        :id="videoId" 
+    <video
+        :id="videoId"
         autoplay="true"
         v-if="!muted">
     </video>
+    <canvas
+        id="remoteCanvas"
+        class="faceapi"
+    />
   </div>
 </template>
 
@@ -62,6 +66,13 @@ export default {
   video {
     width: 100%;
     height: 100%;
+  }
+  canvas {
+    width: 100%;
+    //height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 }
 </style>

@@ -8,6 +8,9 @@ import VueResource from 'vue-resource'
 import './styles/app.scss'
 import { url } from './utils/config'
 import adapter from 'webrtc-adapter'
+import { FACE } from './mixins/face';
+
+FACE.load();
 
 console.log(`Browser ${adapter.browserDetails.browser} - version ${adapter.browserDetails.version}`)
 

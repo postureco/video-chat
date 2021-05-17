@@ -16,9 +16,10 @@
 
 
 <script>
-import { WS_EVENTS } from '../utils/config'
+import {WS_EVENTS} from '../utils/config'
 import { videoConfiguration } from './../mixins/WebRTC'
 import Video from './video/Video'
+import { FACE } from './../mixins/face';
 
 export default {
   name: "VideoArea",
@@ -56,6 +57,12 @@ export default {
     !this.videoAnswer.video
       ? this.createOffer(this.pc, this.to, this.room) // Caller
       : this.handleAnswer(this.videoAnswer.remoteDesc, this.pc, this.videoAnswer.from, this.room) // Callee
+
+    const videoDiv = document.getElementById('remoteVideo')
+    const canvasDiv = document.getElementById('remoteCanvas')
+    const canvasCtx = canvasDiv.getContext('2d')
+    this.start(videoDiv, canvasDiv, canvasCtx, 2)
+
   },
   mounted() {
     this.myVideo = document.getElementById("localVideo")
@@ -64,7 +71,7 @@ export default {
   beforeDestroy() {
     this.pc.close()
     this.pc = null
-    this.$socket.emit(WS_EVENTS.privateMessagePCSignaling, {  
+    this.$socket.emit(WS_EVENTS.privateMessagePCSignaling, {
       to: this.to,
       from: this.$store.state.username,
       room: this.room
@@ -82,6 +89,36 @@ export default {
         }
       }
     },
+    start (videoDiv, canvasDiv, canvasCtx, fps) {
+      console.log('XXX Conference start() called');
+      const self = this
+      if (self.interval) {
+        clearInterval(self.interval)
+      }
+      self.interval = setInterval(async () => {
+        console.log('XXX Conference drawImage called');
+
+        canvasCtx.drawImage(videoDiv, 0, 0, 320, 247) // FIXME get right dims
+        const options = {
+          //detectionsEnabled: self.withOptions.find(o => o === 0) === 0,
+          landmarksEnabled: true,
+          descriptorsEnabled: true,
+          expressionsEnabled: true,
+        }
+        const detections = await FACE.getFaceDetections({canvas: canvasDiv, options})
+        if (detections.length) {
+          detections.forEach(async (detection) => {
+            FACE.draw(
+                {
+                  canvasDiv,
+                  canvasCtx,
+                  detection,
+                  options
+                })
+          })
+        }
+      }, 1000 / fps)
+    }
   },
   watch: {
     videoAnswer: function(newVal, oldVal) {
